@@ -1,7 +1,7 @@
 {
-  "name": "chrome-extension-sample",
+  "name": "chrome-ext-self-control",
   "version": "1.0.0",
-  "description": "chrome-extension-sample",
+  "description": "chrome-ext-self-control",
   "main": "index.js",
   "scripts": {
     "watch": "webpack --config webpack/webpack.dev.js --watch",
@@ -12,23 +12,24 @@
   },
   "author": "",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tokku5552/chrome-extension-sample.git"
-  },
   "dependencies": {
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-hook-form": "^7.26.0"
   },
   "devDependencies": {
     "@types/chrome": "0.0.158",
     "@types/jest": "^27.0.2",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.3.3",
     "copy-webpack-plugin": "^9.0.1",
     "glob": "^7.1.6",
     "jest": "^27.2.1",
     "prettier": "^2.2.1",
+    "react-router-dom": "^6.2.1",
+    "recoil": "^0.5.1",
+    "recoil-persist": "^4.0.0",
     "rimraf": "^3.0.2 ",
     "ts-jest": "^27.0.5",
     "ts-loader": "^8.0.0",

@@ -1,57 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React, { VFC } from "react";
 import ReactDOM from "react-dom";
+import { RecoilRoot, useRecoilValue } from "recoil";
 
-const Popup = () => {
-  const [count, setCount] = useState(0);
-  const [currentURL, setCurrentURL] = useState<string>();
+import { DataListAdd } from "./component/DataListAdd";
+import { DataItem } from "./component/DataItem";
+import { dataListState } from "./store/dataListState";
 
-  useEffect(() => {
-    chrome.action.setBadgeText({ text: count.toString() });
-  }, [count]);
+const Popup: VFC = () => {
+  const dataList = useRecoilValue(dataListState);
+  // const [currentURL, setCurrentURL] = useState<string>();
 
-  useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      setCurrentURL(tabs[0].url);
-    });
-  }, []);
+  // const [infos, setInfo] = useRecoilState(dataState);
 
-  const changeBackground = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const tab = tabs[0];
-      if (tab.id) {
-        chrome.tabs.sendMessage(
-          tab.id,
-          {
-            color: "#555555",
-          },
-          (msg) => {
-            console.log("result message:", msg);
-          }
-        );
-      }
-    });
-  };
+  // const BAD_URL = "https://www.youtube.com/";
+
+  // useEffect(() => {
+  //   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+  //     setCurrentURL(tabs[0].url);
+  //   });
+  // }, []);
+
+  // if (currentURL?.match(BAD_URL)) {
+  //   setTimeout(() => {
+  //     window.open("https://www.google.com/?hl=ja");
+  //   }, 3 * 1000);
+  // }
 
   return (
     <>
-      <ul style={{ minWidth: "700px" }}>
-        <li>Current URL: {currentURL}</li>
+      <ul style={{ minWidth: "400px", height: "400px" }}>
+        {/* <li>Current URL: {currentURL}</li> */}
         <li>Current Time: {new Date().toLocaleTimeString()}</li>
       </ul>
-      <button
-        onClick={() => setCount(count + 1)}
-        style={{ marginRight: "5px" }}
-      >
-        count up
-      </button>
-      <button onClick={changeBackground}>change background</button>
+      <DataListAdd />
+      {dataList.map((dataItem) => (
+        <DataItem key={dataItem.id} item={dataItem} />
+      ))}
     </>
   );
 };
 
 ReactDOM.render(
   <React.StrictMode>
-    <Popup />
+    <RecoilRoot>
+      <Popup />
+    </RecoilRoot>
   </React.StrictMode>,
   document.getElementById("root")
 );

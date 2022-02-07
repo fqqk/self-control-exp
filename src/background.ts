@@ -1,6 +1,17 @@
-function polling() {
-  // console.log("polling");
-  setTimeout(polling, 1000 * 30);
-}
+const openTab = (query?: string) => {
+  if (query) {
+    chrome.tabs.create({ url: `https://www.google.com/search?q=${query}` });
+  }
+};
 
-polling();
+chrome.runtime.onInstalled.addListener((): void => {
+  chrome.contextMenus.create({
+    id: "sample",
+    title: "選択した文字列を検索する",
+    contexts: ["selection"],
+  });
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab): void => {
+  openTab(info.selectionText);
+});
