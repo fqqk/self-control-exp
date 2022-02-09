@@ -8,7 +8,7 @@ const { persistAtom } = recoilPersist();
 export type DataType = {
   id: number;
   url: string;
-  time: string;
+  time: number | undefined;
 };
 
 //データの状態を管理。初期値は空

@@ -31,11 +31,11 @@ const Popup: VFC = () => {
       <ul style={{ minWidth: "400px", height: "400px" }}>
         {/* <li>Current URL: {currentURL}</li> */}
         <li>Current Time: {new Date().toLocaleTimeString()}</li>
+        <DataListAdd />
+        {dataList.map((dataItem) => (
+          <DataItem key={dataItem.id} item={dataItem} />
+        ))}
       </ul>
-      <DataListAdd />
-      {dataList.map((dataItem) => (
-        <DataItem key={dataItem.id} item={dataItem} />
-      ))}
     </>
   );
 };
