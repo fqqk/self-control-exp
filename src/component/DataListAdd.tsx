@@ -1,6 +1,6 @@
 import React from "react";
 import { ChangeEventHandler, useCallback, useState, VFC } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { dataListState } from "../store/dataListState";
 
@@ -16,13 +16,30 @@ export const DataListAdd: VFC = () => {
 
   //useStateで一旦受け取ったものをマージしてグローバルに管理
   const setDataList = useSetRecoilState(dataListState);
+  const dataList = useRecoilValue(dataListState);
 
   //受け取った値にidを付与し、recoilに渡す
   const addData = useCallback(() => {
-    setDataList((oldDataList) => [
-      ...oldDataList,
-      { id: getId(), url: inputUrl, time: inputTime },
-    ]);
+    if (dataList.length === 0) {
+      setDataList((oldDataList) => [
+        ...oldDataList,
+        {
+          id: 0,
+          url: inputUrl,
+          time: inputTime,
+        },
+      ]);
+    } else {
+      setDataList((oldDataList) => [
+        ...oldDataList,
+        {
+          id: oldDataList[oldDataList.length - 1].id + 1,
+          url: inputUrl,
+          time: inputTime,
+        },
+      ]);
+    }
+
     //データを格納した後のフォームの初期化とエラーフラグの初期化
     setInputUrl("");
     setInputTime(0);
@@ -75,8 +92,3 @@ export const DataListAdd: VFC = () => {
     </div>
   );
 };
-
-let id = 0;
-function getId() {
-  return id++;
-}
