@@ -1,17 +1,18 @@
-import React, { VFC, useState, useEffect } from "react";
+import React, { VFC, useState, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 import { RecoilRoot, useRecoilValue } from "recoil";
 
 import { DataListAdd } from "./component/DataListAdd";
 import { DataItem } from "./component/DataItem";
 import { dataListState } from "./store/dataListState";
-import { Background } from "./background";
 
 const Popup: VFC = () => {
   const dataList = useRecoilValue(dataListState);
   const [currentURL, setCurrentURL] = useState<string>();
 
-  Background();
+  chrome.runtime.sendMessage(dataList, function (res) {
+    console.log("受け取ったメッセージ", res);
+  });
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -23,7 +24,6 @@ const Popup: VFC = () => {
     <>
       <ul style={{ minWidth: "400px", height: "400px" }}>
         <li>Current URL: {currentURL}</li>
-        <li>Current Time: {new Date().toLocaleTimeString()}</li>
         <DataListAdd />
         {dataList.map((dataItem) => (
           <DataItem key={dataItem.id} item={dataItem} />

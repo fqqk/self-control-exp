@@ -1,47 +1,63 @@
-// import { useState } from "react";
-
-import { useRecoilValue } from "recoil";
-import { dataListState } from "./store/dataListState";
-
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-  console.log("BackURL", tabs[0].url);
+  //現在のタブのURLを取得
+  const currentURL = tabs[0].url;
+  console.log(currentURL);
+
+  //popup.tsxと通信
+  chrome.runtime.onMessage.addListener(function (
+    message,
+    sender,
+    sendResponse
+  ) {
+    sendResponse("dataList受け取りましたよ〜");
+    chrome.storage.sync.set({ data: message }, function () {
+      console.log("dataListをdataに入れました〜");
+    });
+
+    //ローカルストレージにdataListを保存
+    chrome.storage.sync.get(["data"], function (res) {
+      const dataList = res;
+      console.log("dataをdataList:", dataList);
+      console.log("長さ", dataList.data.length);
+
+      //現在のタブのURLがローカルストレージに保存されているURLのドメイン情報を含むか検証
+      for (let i = 0; i < dataList.data.length; i++) {
+        if (currentURL?.match(dataList.data[i].domain)) {
+          console.log("domainが一致したぞ！");
+          chrome.runtime.sendMessage({ isURL: true }, function (conRes) {
+            console.log("content_scriptより", conRes);
+          });
+          return;
+        } else {
+          console.log("まだ一致するURLはないみたいね");
+        }
+      }
+    });
+    return true;
+  });
 });
 
-console.log("hehihi");
+// chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+//   // console.log("dataList:", message);
 
-export const Background = () => {
-  const dataList = useRecoilValue(dataListState);
-  console.log(dataList);
-
-  // const [currentURL, setCurrentURL] = useState<string>();
-  // const [isMatchUrl, setIsMatchUrl] = useState(false);
-  // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-  //   console.log(tabs[0].url);
-  // });
-  // chrome.tabs.sendMessage(
-  //   tabs[0].id,
-  //   { message: "BadURL" },
-  //   function (item) {}
-  // );
-  // return { isMatchUrl };
-};
-
-// Background();
-
-// const openTab = (query?: string) => {
-//   if (query) {
-//     chrome.tabs.create({ url: `https://www.google.com/search?q=${query}` });
-//   }
-// };
-
-// chrome.runtime.onInstalled.addListener((): void => {
-//   chrome.contextMenus.create({
-//     id: "sample",
-//     title: "選択した文字列を検索する",
-//     contexts: ["selection"],
+//   sendResponse("dataList受け取りましたよ〜");
+//   chrome.storage.sync.set({ data: message }, function () {
+//     console.log("dataListをdataに入れました〜");
 //   });
-// });
+//   chrome.storage.sync.get(["data"], function (res) {
+//     const dataList = res;
+//     console.log("dataをdataList:", dataList);
+//     console.log("長さ", dataList.data.length);
 
-// chrome.contextMenus.onClicked.addListener((info, tab): void => {
-//   openTab(info.selectionText);
+//     for (let i = 0; i < dataList.data.length; i++) {
+//       if (dataList.data[i].url.match(currentURL)) {
+//         chrome.runtime.sendMessage({ isURL: true }, function (res) {
+//           console.log("content_scriptより", res);
+//         });
+//       } else {
+//         console.log("まだ一致するURLはないみたいね");
+//       }
+//     }
+//   });
+//   return true;
 // });
