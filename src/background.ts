@@ -87,11 +87,11 @@ const popUpConnect = (item: DataType, sendResponse: void) => {
 //content_scriptとの通信
 
 const contentConnect = (): boolean => {
-  let isDom = false;
-  console.log("最初のisDom", isDom);
+  let item = false;
+  console.log("最初のisDom", item);
 
   //非同期処理
-  isDom = isDomFunc(isDom);
+  const isDom = isDomFunc(item);
 
   console.log("処理後のisDom", isDom);
   return isDom;
@@ -99,10 +99,29 @@ const contentConnect = (): boolean => {
 
 //非同期処理により、itemにtrueが渡るタイミングとreturnするタイミングにずれが生じている
 const isDomFunc = (item: boolean): boolean => {
-  getCurrentUrl().then(async (currentURL) => {
-    const dataList = await getLocalStorageItem();
-    matchUrl(currentURL, dataList, item);
+  // const isDom = await getCurrentUrl().then(async (currentURL) => {
+  //   const dataList = await getLocalStorageItem();
+  //   const isDom = matchUrl(currentURL, dataList, item);
+  //   return isDom;
+  // });
+
+  const isDom = item;
+
+  const Promise = getCurrentUrl();
+  const result = Promise.then((res) => {
+    console.log(res);
+
+    return res;
   });
+  console.log(result);
+
+  // getLocalStorageItem().then((res) => {
+  //   console.log(res);
+  // });
+
+  // const currentURL = await getCurrentUrl();
+  // const dataList = await getLocalStorageItem();
+  // const isDom = matchUrl(currentURL, dataList, item);
 
   // chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   //   const currentURL = tabs[0].url;
@@ -127,7 +146,7 @@ const isDomFunc = (item: boolean): boolean => {
   // });
   // console.log("isDomFunc_item_return文手前", item);
 
-  return item;
+  return isDom;
 };
 
 const getCurrentUrl = async (): Promise<string | undefined> => {
@@ -136,12 +155,11 @@ const getCurrentUrl = async (): Promise<string | undefined> => {
   return currentURL;
 };
 
-const getLocalStorageItem = async (): Promise<any> => {
+const getLocalStorageItem = async () => {
   const data = await chrome.storage.sync.get(["data"]);
-  const dataList = data.then((res: any) => {
-    return res;
+  const dataList: DataType[] = data.then((res: { data: DataType[] }) => {
+    return res.data;
   });
-
   return dataList;
 };
 
@@ -160,13 +178,3 @@ const matchUrl = (
   }
   return item;
 };
-
-//関数化を試みた
-// chrome.tabs.onActivated.addListener(() => {
-//   getCurrentUrl();
-// });
-
-// async function getCurrentTab() {
-//   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-//   return [tab];
-// }
