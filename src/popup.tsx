@@ -10,9 +10,15 @@ const Popup: VFC = () => {
   const dataList = useRecoilValue(dataListState);
   const [currentURL, setCurrentURL] = useState<string>();
 
-  chrome.runtime.sendMessage(dataList, function (res) {
-    console.log("受け取ったメッセージ", res);
-  });
+  //backgroundと通信
+  useEffect(() => {
+    chrome.runtime.sendMessage(
+      { type: "popup", item: dataList },
+      function (res) {
+        console.log("受け取ったメッセージ", res);
+      }
+    );
+  }, [dataList]);
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {

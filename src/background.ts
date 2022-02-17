@@ -1,63 +1,172 @@
-chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-  //現在のタブのURLを取得
-  const currentURL = tabs[0].url;
-  console.log(currentURL);
+import { DataType } from "../src/store/dataListState";
 
-  //popup.tsxと通信
-  chrome.runtime.onMessage.addListener(function (
-    message,
-    sender,
-    sendResponse
-  ) {
-    sendResponse("dataList受け取りましたよ〜");
-    chrome.storage.sync.set({ data: message }, function () {
-      console.log("dataListをdataに入れました〜");
-    });
+// //タブが変更されたとき
+// chrome.tabs.onActivated.addListener(() => {
+//   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+//     //現在のタブのURLを取得
+//     const currentURL = tabs[0].url;
+//     const tabId = tabs[0].id;
+//     console.log(currentURL);
+//     console.log(tabId);
 
-    //ローカルストレージにdataListを保存
-    chrome.storage.sync.get(["data"], function (res) {
-      const dataList = res;
-      console.log("dataをdataList:", dataList);
-      console.log("長さ", dataList.data.length);
+//     //popup.tsxと通信し、ローカルストレージにdataListを保存
+//     chrome.runtime.onMessage.addListener(function (
+//       message,
+//       sender,
+//       sendResponse
+//     ) {
+//       sendResponse("dataList受け取りましたよ〜");
+//       chrome.storage.sync.set({ data: message }, function () {
+//         console.log("dataListをdataに入れました〜");
+//       });
 
-      //現在のタブのURLがローカルストレージに保存されているURLのドメイン情報を含むか検証
-      for (let i = 0; i < dataList.data.length; i++) {
-        if (currentURL?.match(dataList.data[i].domain)) {
-          console.log("domainが一致したぞ！");
-          chrome.runtime.sendMessage({ isURL: true }, function (conRes) {
-            console.log("content_scriptより", conRes);
-          });
-          return;
-        } else {
-          console.log("まだ一致するURLはないみたいね");
-        }
-      }
-    });
-    return true;
-  });
+//       //ローカルストレージ内のデータを取得
+//       chrome.storage.sync.get(["data"], function (res) {
+//         const dataList = res;
+//         console.log("dataをdataList:", dataList);
+//         console.log("長さ", dataList.data.length);
+
+//         //現在のタブのURLがローカルストレージに保存されているURLのドメイン情報を含むか検証
+//         for (let i = 0; i < dataList.data.length; i++) {
+//           if (currentURL?.match(dataList.data[i].domain)) {
+//             console.log("domainが一致したぞ！", dataList.data[i].domain);
+//             // content_scriptに一致フラグを送る
+//             if (typeof tabId === "number") {
+//               chrome.runtime.onMessage.addListener(function (
+//                 message,
+//                 sender,
+//                 sendResponse
+//               ) {
+//                 sendResponse({ isURL: true });
+//               });
+//               // chrome.tabs.sendMessage(
+//               //   tabId,
+//               //   { isURL: true },
+//               //   function (conRes) {
+//               //     if (conRes) {
+//               //       console.log("content_scriptより", conRes);
+//               //     } else {
+//               //       console.log("content_scriptからは何も返っていません。");
+//               //     }
+//               //   }
+//               // );
+//             }
+//             return;
+//           } else {
+//             console.log("まだ一致するURLはないみたいね");
+//           }
+//         }
+//       });
+//       return true;
+//     });
+//   });
+// });
+
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  switch (message.type) {
+    case "popup":
+      console.log("popup:", message.item);
+      popUpConnect(message.item);
+      break;
+
+    case "content":
+      console.log("content:", message.item);
+      const isDom: boolean = contentConnect();
+      sendResponse(isDom);
+      break;
+  }
 });
 
-// chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-//   // console.log("dataList:", message);
+//popupとの通信
+const popUpConnect = (item: DataType, sendResponse: void) => {
+  chrome.storage.sync.set({ data: item }, () => {
+    console.log("dataListをdataに入れました");
+  });
+};
 
-//   sendResponse("dataList受け取りましたよ〜");
-//   chrome.storage.sync.set({ data: message }, function () {
-//     console.log("dataListをdataに入れました〜");
-//   });
-//   chrome.storage.sync.get(["data"], function (res) {
-//     const dataList = res;
-//     console.log("dataをdataList:", dataList);
-//     console.log("長さ", dataList.data.length);
+//content_scriptとの通信
 
-//     for (let i = 0; i < dataList.data.length; i++) {
-//       if (dataList.data[i].url.match(currentURL)) {
-//         chrome.runtime.sendMessage({ isURL: true }, function (res) {
-//           console.log("content_scriptより", res);
-//         });
-//       } else {
-//         console.log("まだ一致するURLはないみたいね");
-//       }
-//     }
-//   });
-//   return true;
+const contentConnect = (): boolean => {
+  let isDom = false;
+  console.log("最初のisDom", isDom);
+
+  //非同期処理
+  isDom = isDomFunc(isDom);
+
+  console.log("処理後のisDom", isDom);
+  return isDom;
+};
+
+//非同期処理により、itemにtrueが渡るタイミングとreturnするタイミングにずれが生じている
+const isDomFunc = (item: boolean): boolean => {
+  getCurrentUrl().then(async (currentURL) => {
+    const dataList = await getLocalStorageItem();
+    matchUrl(currentURL, dataList, item);
+  });
+
+  // chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  //   const currentURL = tabs[0].url;
+  //   console.log("isDomFunc_currentURL:", currentURL);
+
+  //   chrome.storage.sync.get(["data"], (res) => {
+  //     const dataList = res;
+  //     console.log("isDomFunc_dataList:", dataList);
+
+  //     for (let i = 0; i < dataList.data.length; i++) {
+  //       if (currentURL?.match(dataList.data[i].domain)) {
+  //         console.log("isDomFunc_domainが一致", dataList.data[i].domain);
+  //         item = true;
+  //       } else {
+  //         console.log("isDomFunc_domain不一致");
+  //       }
+  //       console.log("isDomFunc_item_for文内", item);
+  //     }
+  //     console.log("isDomFunc_item_storage内", item);
+  //   });
+  //   console.log("isDomFunc_item_storage外", item);
+  // });
+  // console.log("isDomFunc_item_return文手前", item);
+
+  return item;
+};
+
+const getCurrentUrl = async (): Promise<string | undefined> => {
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  const currentURL = tabs[0].url;
+  return currentURL;
+};
+
+const getLocalStorageItem = async (): Promise<any> => {
+  const data = await chrome.storage.sync.get(["data"]);
+  const dataList = data.then((res: any) => {
+    return res;
+  });
+
+  return dataList;
+};
+
+const matchUrl = (
+  currentURL: string | undefined,
+  dataList: DataType[],
+  item: boolean
+): boolean => {
+  for (let i = 0; i < dataList.length; i++) {
+    if (currentURL?.match(dataList[i].domain)) {
+      console.log("isDomFunc_domainが一致", dataList[i].domain);
+      item = true;
+    } else {
+      console.log("isDomFunc_domain不一致");
+    }
+  }
+  return item;
+};
+
+//関数化を試みた
+// chrome.tabs.onActivated.addListener(() => {
+//   getCurrentUrl();
 // });
+
+// async function getCurrentTab() {
+//   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+//   return [tab];
+// }
