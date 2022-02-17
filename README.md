@@ -1,6 +1,8 @@
-# Chrome Extension Sample
+# 特定のサイトを見づらくするchrome拡張機能
 
-Chrome Extension Sample
+
+ついつい訪れてしまうサイトの閲覧を制限するchrome拡張機能です。
+ON/OFFの切り替えにご利用ください
 
 ## Prerequisites
 
