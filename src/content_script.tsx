@@ -1,3 +1,5 @@
+import { ResponseType } from "./store/resDataState";
+
 document.body.style.backgroundColor = "orange";
 
 // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -9,13 +11,15 @@ document.body.style.backgroundColor = "orange";
 
 chrome.runtime.sendMessage(
   { type: "content", item: "どうしたらいい？" },
-  (res: boolean) => {
-    if (res) {
+  async (res: ResponseType) => {
+    const response = await res;
+    if (response) {
       document.body.style.backgroundColor = "pink";
       //popupに向けたメッセージをbackgroundから受け取った。
-      alert(res);
+      console.log(response);
+      alert(response);
     } else {
-      alert(res);
+      alert(response);
     }
   }
 );
