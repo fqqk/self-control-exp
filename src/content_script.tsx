@@ -1,25 +1,58 @@
 import { ResponseType } from "./store/resDataState";
 
-document.body.style.backgroundColor = "orange";
-
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   console.log(message.isURL);
-//   sendResponse("backgroundへ。これからDOMを操作します");
-//   document.body.style.backgroundColor = "black";
-//   return true;
-// });
+document.body.style.backgroundColor = "pink";
 
 chrome.runtime.sendMessage(
   { type: "content", item: "どうしたらいい？" },
-  async (res: ResponseType) => {
-    const response = await res;
-    if (response) {
-      document.body.style.backgroundColor = "pink";
-      //popupに向けたメッセージをbackgroundから受け取った。
-      console.log(response);
-      alert(response);
+  (res: ResponseType) => {
+    if (res.isDom) {
+      const html = document.getElementsByTagName("html");
+      //hateDiv
+      // const hateDiv = document.createElement("div");
+      // hateDiv.innerHTML = "<h1 style={font-weight:bold;}>閲覧規制中</h1>";
+      // hateDiv.style.width = "100%";
+      // hateDiv.style.height = "100%";
+      // hateDiv.style.backgroundColor = "#00A0E9";
+      // hateDiv.id = "hate";
+      // html[0].appendChild(hateDiv);
+      //canvas
+      const canvas = document.createElement("canvas");
+      canvas.width = 600;
+      canvas.height = 600;
+      canvas.style.backgroundColor = "#00A0E9";
+      canvas.id = "canvas";
+      html[0].appendChild(canvas);
+      const script = document.createElement("script");
+      script.src = "https://code.createjs.com/1.0.0/createjs.min.js";
+      document.head.appendChild(script);
+      document.head.insertAdjacentHTML("beforeend", canvasStyle);
+
+      //createJs
+      createJs(canvas);
+      alert(res.isDom);
     } else {
-      alert(response);
+      alert(res.isDom);
     }
   }
 );
+
+const canvasStyle = `
+<style>
+canvas#canvas {
+  position: fixed;
+  top: 0;
+  opacity: 0.5;
+  z-index: 10;
+}
+</style>
+`;
+
+const createJs = (canvas: HTMLCanvasElement) => {
+  const stage = new createjs.Stage(canvas);
+  const shape = new createjs.Shape();
+  shape.graphics
+    .beginFill("#ff0000")
+    .drawCircle(canvas.width / 2, canvas.height / 2, 40);
+  stage.addChild(shape);
+  stage.update();
+};

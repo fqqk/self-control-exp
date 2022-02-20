@@ -29,8 +29,7 @@ const Popup: VFC = () => {
   return (
     <>
       <ul style={{ minWidth: "400px", height: "400px" }}>
-        <li>Current URL: {currentURL}</li>
-        <DataListAdd />
+        <DataListAdd currentURL={currentURL} />
         {dataList.map((dataItem) => (
           <DataItem key={dataItem.id} item={dataItem} />
         ))}

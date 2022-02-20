@@ -1,16 +1,30 @@
 import { DataType } from "./store/dataListState";
 import { ResponseType } from "./store/resDataState";
 
+console.log("ただのログ");
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   switch (message.type) {
     case "popup":
       console.log("popup:", message.item);
       popUpConnect(message.item);
+
       break;
 
     case "content":
       console.log("content:", message.item);
-      contentConnect().then(sendResponse);
+      // contentConnect().then(sendResponse);
+
+      contentConnect().then((res) => {
+        chrome.alarms.create(`${res.id}`, {
+          delayInMinutes: res.time,
+          periodInMinutes: 1,
+        });
+        chrome.alarms.onAlarm.addListener(() => {
+          console.log("アラームです");
+          sendResponse(res);
+        });
+      });
 
       break;
   }
@@ -79,5 +93,15 @@ const matchUrl = async (
     console.log("isDomFunc_domain不一致");
   }
 
-  return { isDom: item, time: isMatchDomain?.time };
+  // chrome.alarms.create(`${isMatchDomain?.id}`, {
+  //   delayInMinutes: isMatchDomain?.time,
+  // });
+
+  return { id: isMatchDomain?.id, isDom: item, time: isMatchDomain?.time };
 };
+
+// const aaa = (func1: void, func2: void, res: ResponseType) => {
+//   (res) => {
+//     func2(res);
+//   };
+// };
