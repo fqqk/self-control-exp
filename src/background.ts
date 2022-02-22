@@ -18,7 +18,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       contentConnect().then((res) => {
         chrome.alarms.create(`${res.id}`, {
           delayInMinutes: res.time,
-          periodInMinutes: 1,
         });
         chrome.alarms.onAlarm.addListener(() => {
           console.log("アラームです");

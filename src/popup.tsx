@@ -6,6 +6,9 @@ import { DataListAdd } from "./component/DataListAdd";
 import { DataItem } from "./component/DataItem";
 import { dataListState } from "./store/dataListState";
 
+import { ChakraProvider } from "@chakra-ui/provider";
+import { Header } from "./component/header/Header";
+
 const Popup: VFC = () => {
   const dataList = useRecoilValue(dataListState);
   const [currentURL, setCurrentURL] = useState<string>();
@@ -28,6 +31,7 @@ const Popup: VFC = () => {
 
   return (
     <>
+      <Header children="self control" />
       <ul style={{ minWidth: "400px", height: "400px" }}>
         <DataListAdd currentURL={currentURL} />
         {dataList.map((dataItem) => (
@@ -41,7 +45,9 @@ const Popup: VFC = () => {
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
-      <Popup />
+      <ChakraProvider>
+        <Popup />
+      </ChakraProvider>
     </RecoilRoot>
   </React.StrictMode>,
   document.getElementById("root")

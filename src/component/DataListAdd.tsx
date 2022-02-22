@@ -4,6 +4,16 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { dataListState } from "../store/dataListState";
 
+import {
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+  Flex,
+} from "@chakra-ui/react";
+import { BaseButton } from "./atom/button/BaseButton";
+import { UrlInput, TimeInput } from "./input/Input";
+
 type Props = {
   currentURL: string | undefined;
 };
@@ -15,7 +25,6 @@ export const DataListAdd: VFC<Props> = (props) => {
   const [inputTime, setInputTime] = useState<number | undefined>(undefined);
   const [urlError, setUrlError] = useState(false);
   const [timeError, setTimeError] = useState(false);
-
   const urlReg =
     /(https?:\/\/[\w\-\\.\\/\\?\\,%&=\\#\\:\u3000-\u30FE\u4E00-\u9FA0\uFF01-\uFFE3]+)/g;
   const timeReg = /^([1-9]\d*|0)$/;
@@ -86,26 +95,46 @@ export const DataListAdd: VFC<Props> = (props) => {
     []
   );
 
-  return (
-    <div>
-      <button onClick={addCurrent}>現在のURLを登録する</button>
-      <br />
-      <input
-        placeholder="URL"
-        type="url"
-        value={inputUrl}
-        onChange={onChangeUrl}
-      />
+  const times: number[] = [1, 2, 3, 4, 5];
 
-      {!urlError && <p>URLを入力してください</p>}
-      <input
-        placeholder="分"
-        type="text"
-        value={inputTime}
-        onChange={onChangeTime}
-      />
-      {!timeError && <p>数字を入力してください</p>}
-      {urlError && timeError && <button onClick={addData}>Add</button>}
-    </div>
+  const optionTimes = times.map((time) => (
+    <option value={time} key={time}>
+      {time}
+    </option>
+  ));
+
+  const handleChangeTime: ChangeEventHandler<HTMLSelectElement> = (e) => {
+    const value: number = Number(e.target.value);
+    setInputTime(value);
+    setTimeError(true);
+  };
+
+  return (
+    <FormControl>
+      <Flex align="center" justify="space-between">
+        <UrlInput value={inputUrl} placeholder="URL" onChange={onChangeUrl} />
+
+        <BaseButton onClick={addCurrent}>Current URL</BaseButton>
+      </Flex>
+
+      {!urlError && (
+        <FormHelperText color="red" fontSize="12px">
+          Not URL
+        </FormHelperText>
+      )}
+      <TimeInput value={inputTime} placeholder="min" onChange={onChangeTime} />
+      <select value={inputTime} onChange={handleChangeTime}>
+        <option>時間を指定して</option>
+        {optionTimes}
+      </select>
+      {!timeError && (
+        <FormHelperText color="red" fontSize="12px">
+          Input time
+        </FormHelperText>
+      )}
+      {urlError && timeError && (
+        <BaseButton onClick={addData}>Add Data</BaseButton>
+      )}
+    </FormControl>
   );
 };
