@@ -10,9 +10,11 @@ import {
   FormErrorMessage,
   FormHelperText,
   Flex,
+  Box,
 } from "@chakra-ui/react";
-import { BaseButton } from "./atom/button/BaseButton";
-import { UrlInput, TimeInput } from "./input/Input";
+import { BaseButton, SubmitButton } from "./atom/button/Button";
+import { UrlInput, TimeInput } from "./atom/input/Input";
+import { SelectTime } from "./atom/select/Select";
 
 type Props = {
   currentURL: string | undefined;
@@ -111,30 +113,44 @@ export const DataListAdd: VFC<Props> = (props) => {
 
   return (
     <FormControl>
-      <Flex align="center" justify="space-between">
-        <UrlInput value={inputUrl} placeholder="URL" onChange={onChangeUrl} />
+      <Box p={4} borderTop="1px" borderTopColor="blackAlpha.200">
+        <Flex align="center">
+          <Box mr={4}>
+            <UrlInput
+              value={inputUrl}
+              placeholder="URL"
+              onChange={onChangeUrl}
+            />
+          </Box>
+          <BaseButton onClick={addCurrent}>Current URL</BaseButton>
+        </Flex>
 
-        <BaseButton onClick={addCurrent}>Current URL</BaseButton>
-      </Flex>
-
-      {!urlError && (
-        <FormHelperText color="red" fontSize="12px">
-          Not URL
-        </FormHelperText>
-      )}
-      <TimeInput value={inputTime} placeholder="min" onChange={onChangeTime} />
-      <select value={inputTime} onChange={handleChangeTime}>
-        <option>時間を指定して</option>
-        {optionTimes}
-      </select>
-      {!timeError && (
-        <FormHelperText color="red" fontSize="12px">
-          Input time
-        </FormHelperText>
-      )}
-      {urlError && timeError && (
-        <BaseButton onClick={addData}>Add Data</BaseButton>
-      )}
+        {!urlError && (
+          <FormHelperText color="red" fontSize="12px">
+            Not URL
+          </FormHelperText>
+        )}
+        <Box mt={4}>
+          <Flex align="center">
+            <Box mr={4}>
+              <TimeInput
+                value={inputTime}
+                placeholder="min"
+                onChange={onChangeTime}
+              />
+            </Box>
+            <SelectTime value={inputTime} onChange={handleChangeTime} />
+          </Flex>
+          {!timeError && (
+            <FormHelperText color="red" fontSize="12px">
+              Input time
+            </FormHelperText>
+          )}
+          {urlError && timeError && (
+            <SubmitButton onClick={addData}>Add Data</SubmitButton>
+          )}
+        </Box>
+      </Box>
     </FormControl>
   );
 };

@@ -7,7 +7,8 @@ import { DataItem } from "./component/DataItem";
 import { dataListState } from "./store/dataListState";
 
 import { ChakraProvider } from "@chakra-ui/provider";
-import { Header } from "./component/header/Header";
+import { Header } from "./component/atom/header/Header";
+import { Box, Heading, Stack } from "@chakra-ui/layout";
 
 const Popup: VFC = () => {
   const dataList = useRecoilValue(dataListState);
@@ -31,13 +32,21 @@ const Popup: VFC = () => {
 
   return (
     <>
-      <Header children="self control" />
-      <ul style={{ minWidth: "400px", height: "400px" }}>
+      <Box pt={12}>
+        <Header children="self control" />
+        <Stack
+          direction="column"
+          minW="400px"
+          h="300px"
+          p={4}
+          overflow="scroll"
+        >
+          {dataList.map((dataItem) => (
+            <DataItem key={dataItem.id} item={dataItem} />
+          ))}
+        </Stack>
         <DataListAdd currentURL={currentURL} />
-        {dataList.map((dataItem) => (
-          <DataItem key={dataItem.id} item={dataItem} />
-        ))}
-      </ul>
+      </Box>
     </>
   );
 };

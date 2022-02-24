@@ -16,7 +16,7 @@ export const UrlInput: VFC<Props<string>> = (props) => {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        width="300px"
+        width="200px"
         size="xs"
         variant="outline"
       ></Input>
