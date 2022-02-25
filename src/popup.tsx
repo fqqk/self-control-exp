@@ -1,14 +1,12 @@
-import React, { VFC, useState, useEffect, useCallback } from "react";
+import React, { VFC, useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { RecoilRoot, useRecoilValue } from "recoil";
-
 import { DataListAdd } from "./component/DataListAdd";
 import { DataItem } from "./component/DataItem";
 import { dataListState } from "./store/dataListState";
-
 import { ChakraProvider } from "@chakra-ui/provider";
 import { Header } from "./component/atom/header/Header";
-import { Box, Heading, Stack } from "@chakra-ui/layout";
+import { Box, Stack } from "@chakra-ui/layout";
 
 const Popup: VFC = () => {
   const dataList = useRecoilValue(dataListState);

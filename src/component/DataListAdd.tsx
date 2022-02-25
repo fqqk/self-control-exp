@@ -4,16 +4,9 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import { dataListState } from "../store/dataListState";
 
-import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  Flex,
-  Box,
-} from "@chakra-ui/react";
+import { Flex, Box } from "@chakra-ui/react";
 import { BaseButton, SubmitButton } from "./atom/button/Button";
-import { UrlInput, TimeInput } from "./atom/input/Input";
+
 import { SelectTime } from "./atom/select/Select";
 
 type Props = {
@@ -27,9 +20,8 @@ export const DataListAdd: VFC<Props> = (props) => {
   const [inputTime, setInputTime] = useState<number | undefined>(undefined);
   const [urlError, setUrlError] = useState(false);
   const [timeError, setTimeError] = useState(false);
-  const urlReg =
-    /(https?:\/\/[\w\-\\.\\/\\?\\,%&=\\#\\:\u3000-\u30FE\u4E00-\u9FA0\uFF01-\uFFE3]+)/g;
-  const timeReg = /^([1-9]\d*|0)$/;
+
+  const [isClick, isClickSet] = useState(false);
 
   //useStateで一旦受け取ったものをマージしてグローバルに管理
   const setDataList = useSetRecoilState(dataListState);
@@ -64,46 +56,21 @@ export const DataListAdd: VFC<Props> = (props) => {
     setInputTime(0);
     setUrlError(false);
     setTimeError(false);
+    isClickSet(false);
   }, [inputUrl, inputTime, setDataList]);
 
   //currentURLを登録するかどうか
   const addCurrent = () => {
-    setInputUrl(currentURL!);
-    setUrlError(true);
-  };
-
-  const onChangeUrl: ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
-    const value = e.target.value;
-    setInputUrl(value);
-    if (value.match(urlReg)) {
+    if (!isClick) {
+      isClickSet(true);
+      setInputUrl(currentURL!);
       setUrlError(true);
     } else {
+      isClickSet(false);
+      setInputUrl("");
       setUrlError(false);
     }
-  }, []);
-
-  const onChangeTime: ChangeEventHandler<HTMLInputElement> = useCallback(
-    (e) => {
-      const stringNum = e.target.value;
-      if (stringNum.match(timeReg)) {
-        const value: number = Number(stringNum);
-        setInputTime(value);
-        setTimeError(true);
-      } else {
-        setTimeError(false);
-        setInputTime(undefined);
-      }
-    },
-    []
-  );
-
-  const times: number[] = [1, 2, 3, 4, 5];
-
-  const optionTimes = times.map((time) => (
-    <option value={time} key={time}>
-      {time}
-    </option>
-  ));
+  };
 
   const handleChangeTime: ChangeEventHandler<HTMLSelectElement> = (e) => {
     const value: number = Number(e.target.value);
@@ -112,45 +79,16 @@ export const DataListAdd: VFC<Props> = (props) => {
   };
 
   return (
-    <FormControl>
-      <Box p={4} borderTop="1px" borderTopColor="blackAlpha.200">
-        <Flex align="center">
-          <Box mr={4}>
-            <UrlInput
-              value={inputUrl}
-              placeholder="URL"
-              onChange={onChangeUrl}
-            />
-          </Box>
-          <BaseButton onClick={addCurrent}>Current URL</BaseButton>
-        </Flex>
-
-        {!urlError && (
-          <FormHelperText color="red" fontSize="12px">
-            Not URL
-          </FormHelperText>
+    <Box p={4} borderTop="1px" borderTopColor="blackAlpha.200">
+      <Flex align="center" justify="space-around">
+        <BaseButton onClick={addCurrent} isClick={isClick}>
+          {isClick ? "Get URL" : "Current URL"}
+        </BaseButton>
+        <SelectTime value={inputTime} onChange={handleChangeTime} />
+        {urlError && timeError && (
+          <SubmitButton onClick={addData}>Add Data</SubmitButton>
         )}
-        <Box mt={4}>
-          <Flex align="center">
-            <Box mr={4}>
-              <TimeInput
-                value={inputTime}
-                placeholder="min"
-                onChange={onChangeTime}
-              />
-            </Box>
-            <SelectTime value={inputTime} onChange={handleChangeTime} />
-          </Flex>
-          {!timeError && (
-            <FormHelperText color="red" fontSize="12px">
-              Input time
-            </FormHelperText>
-          )}
-          {urlError && timeError && (
-            <SubmitButton onClick={addData}>Add Data</SubmitButton>
-          )}
-        </Box>
-      </Box>
-    </FormControl>
+      </Flex>
+    </Box>
   );
 };

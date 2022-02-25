@@ -1,58 +1,40 @@
-import { ResponseType } from "./store/resDataState";
+chrome.runtime.onMessage.addListener((message, sender, sendRequest) => {
+  sendRequest("Dom操作します！");
+  if (message.res === true) {
+    const html = document.getElementsByTagName("html");
+    const hateDiv = document.createElement("div");
+    const h1 = document.createElement("h1");
+    h1.innerHTML = "邪魔させてもらいます";
+    hateDiv.appendChild(h1);
+    hateDiv.style.width = "100%";
+    hateDiv.style.height = "100%";
+    hateDiv.style.backgroundColor = "#00A0E9";
 
-document.body.style.backgroundColor = "pink";
+    hateDiv.id = "hate";
+    html[0].appendChild(hateDiv);
 
-chrome.runtime.sendMessage(
-  { type: "content", item: "どうしたらいい？" },
-  (res: ResponseType) => {
-    if (res.isDom) {
-      const html = document.getElementsByTagName("html");
-      //hateDiv
-      // const hateDiv = document.createElement("div");
-      // hateDiv.innerHTML = "<h1 style={font-weight:bold;}>閲覧規制中</h1>";
-      // hateDiv.style.width = "100%";
-      // hateDiv.style.height = "100%";
-      // hateDiv.style.backgroundColor = "#00A0E9";
-      // hateDiv.id = "hate";
-      // html[0].appendChild(hateDiv);
-      //canvas
-      const canvas = document.createElement("canvas");
-      canvas.width = 600;
-      canvas.height = 600;
-      canvas.style.backgroundColor = "#00A0E9";
-      canvas.id = "canvas";
-      html[0].appendChild(canvas);
-      const script = document.createElement("script");
-      script.src = "https://code.createjs.com/1.0.0/createjs.min.js";
-      document.head.appendChild(script);
-      document.head.insertAdjacentHTML("beforeend", canvasStyle);
+    document.head.insertAdjacentHTML("beforeend", hateDivStyle);
 
-      //createJs
-      createJs(canvas);
-      alert(res.isDom);
-    } else {
-      alert(res.isDom);
-    }
+    // alert("Dom操作！");
+  } else {
+    alert("Dom操作なし");
   }
-);
+});
 
-const canvasStyle = `
+const hateDivStyle = `
 <style>
-canvas#canvas {
+#hate {
   position: fixed;
   top: 0;
-  opacity: 0.5;
   z-index: 10;
+  text-align:center;
+}
+
+h1 {
+  font-size:40px;
+  font-weight:bold;
+  position:relative;
+  top:50%
 }
 </style>
 `;
-
-const createJs = (canvas: HTMLCanvasElement) => {
-  const stage = new createjs.Stage(canvas);
-  const shape = new createjs.Shape();
-  shape.graphics
-    .beginFill("#ff0000")
-    .drawCircle(canvas.width / 2, canvas.height / 2, 40);
-  stage.addChild(shape);
-  stage.update();
-};

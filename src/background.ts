@@ -1,8 +1,37 @@
 import { DataType } from "./store/dataListState";
 import { ResponseType } from "./store/resDataState";
 
-console.log("ただのログ");
+//tabの遷移を監視
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  //tabが遷移したらページをリロード
+  chrome.tabs.reload(() => {
+    //ページリロードの完了を待つ
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+      if (changeInfo.status === "complete") {
+        //ページリロードが完了したら現在のURLを取得
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          contentConnect().then((res) => {
+            console.log(res);
+            if (res.isDom) {
+              chrome.alarms.create(`${res.id}`, {
+                delayInMinutes: res.time,
+              });
+              chrome.alarms.onAlarm.addListener(() => {
+                chrome.tabs.sendMessage(tabs[0].id!, { res: true }, (res) => {
+                  console.log(res);
+                });
+              });
+            } else {
+              chrome.tabs.sendMessage(tabs[0].id!, { res: false });
+            }
+          });
+        });
+      }
+    });
+  });
+});
 
+//popupとの通信
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   switch (message.type) {
     case "popup":
@@ -11,21 +40,21 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
       break;
 
-    case "content":
-      console.log("content:", message.item);
-      // contentConnect().then(sendResponse);
+    // case "content":
+    //   console.log("content:", message.item);
+    //   // contentConnect().then(sendResponse);
 
-      contentConnect().then((res) => {
-        chrome.alarms.create(`${res.id}`, {
-          delayInMinutes: res.time,
-        });
-        chrome.alarms.onAlarm.addListener(() => {
-          console.log("アラームです");
-          sendResponse(res);
-        });
-      });
+    //   contentConnect().then((res) => {
+    //     chrome.alarms.create(`${res.id}`, {
+    //       delayInMinutes: res.time,
+    //     });
+    //     chrome.alarms.onAlarm.addListener(() => {
+    //       console.log("アラームです");
+    //       sendResponse(res);
+    //     });
+    //   });
 
-      break;
+    //   break;
   }
   return true;
 });
@@ -92,15 +121,5 @@ const matchUrl = async (
     console.log("isDomFunc_domain不一致");
   }
 
-  // chrome.alarms.create(`${isMatchDomain?.id}`, {
-  //   delayInMinutes: isMatchDomain?.time,
-  // });
-
   return { id: isMatchDomain?.id, isDom: item, time: isMatchDomain?.time };
 };
-
-// const aaa = (func1: void, func2: void, res: ResponseType) => {
-//   (res) => {
-//     func2(res);
-//   };
-// };

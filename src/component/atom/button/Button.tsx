@@ -5,15 +5,16 @@ import { Button } from "@chakra-ui/react";
 type Props = {
   children: string;
   onClick: () => void;
+  isClick: boolean;
 };
 
 export const BaseButton: VFC<Props> = (props) => {
-  const { children, onClick } = props;
+  const { children, onClick, isClick } = props;
   return (
     <>
       <Button
         colorScheme="green"
-        variant="outline"
+        variant={isClick ? "solid" : "outline"}
         width="90px"
         height="30px"
         size="sm"
@@ -26,7 +27,7 @@ export const BaseButton: VFC<Props> = (props) => {
   );
 };
 
-export const DeleteButton: VFC<Props> = (props) => {
+export const DeleteButton: VFC<Omit<Props, "isClick">> = (props) => {
   const { children, onClick } = props;
   return (
     <>
@@ -45,7 +46,7 @@ export const DeleteButton: VFC<Props> = (props) => {
   );
 };
 
-export const SubmitButton: VFC<Props> = (props) => {
+export const SubmitButton: VFC<Omit<Props, "isClick">> = (props) => {
   const { children, onClick } = props;
   return (
     <>

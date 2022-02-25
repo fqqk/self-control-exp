@@ -9,7 +9,7 @@ type Props = {
 
 export const SelectTime: VFC<Props> = (props) => {
   const { value, onChange } = props;
-  const times: number[] = [10, 15, 20, 25, 30];
+  const times: number[] = [10, 15, 30, 60];
 
   const optionTimes = times.map((time) => (
     <option value={time} key={time}>
