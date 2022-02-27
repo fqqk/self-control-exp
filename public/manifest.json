@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
 
-  "name": "self-control-exp",
-  "description": "self-control-exp",
+  "name": "inemuri",
+  "description": "inemuri",
   "version": "1.0",
 
   "options_ui": {
@@ -11,6 +11,12 @@
 
   "action": {
     "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png",
+    "256": "icon.png"
   },
 
   "content_scripts": [

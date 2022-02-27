@@ -1,23 +1,19 @@
+import myImage from "./images/sleep.png";
+const img = document.createElement("img");
+img.src = myImage;
+
 chrome.runtime.onMessage.addListener((message, sender, sendRequest) => {
   sendRequest("Dom操作します！");
   if (message.res === true) {
     const html = document.getElementsByTagName("html");
     const hateDiv = document.createElement("div");
-    const h1 = document.createElement("h1");
-    h1.innerHTML = "邪魔させてもらいます";
-    hateDiv.appendChild(h1);
+    hateDiv.appendChild(img);
     hateDiv.style.width = "100%";
     hateDiv.style.height = "100%";
-    hateDiv.style.backgroundColor = "#00A0E9";
-
+    hateDiv.style.backgroundColor = "#F9E5CB";
     hateDiv.id = "hate";
     html[0].appendChild(hateDiv);
-
     document.head.insertAdjacentHTML("beforeend", hateDivStyle);
-
-    // alert("Dom操作！");
-  } else {
-    alert("Dom操作なし");
   }
 });
 

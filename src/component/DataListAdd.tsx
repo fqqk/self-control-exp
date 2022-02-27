@@ -1,11 +1,15 @@
 import React from "react";
-import { ChangeEventHandler, useCallback, useState, VFC } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-
+import { VFC } from "react";
+import { ChangeEventHandler } from "react";
+import { useCallback } from "react";
+import { useState } from "react";
+import { useRecoilValue } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { dataListState } from "../store/dataListState";
 
-import { Flex, Box } from "@chakra-ui/react";
-import { BaseButton, SubmitButton } from "./atom/button/Button";
+import { Flex } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/layout";
+import { BaseButton } from "./atom/button/Button";
 
 import { SelectTime } from "./atom/select/Select";
 
@@ -81,12 +85,14 @@ export const DataListAdd: VFC<Props> = (props) => {
   return (
     <Box p={4} borderTop="1px" borderTopColor="blackAlpha.200">
       <Flex align="center" justify="space-around">
-        <BaseButton onClick={addCurrent} isClick={isClick}>
+        <BaseButton onClick={addCurrent} isClick={isClick} color={"green"}>
           {isClick ? "Get URL" : "Current URL"}
         </BaseButton>
         <SelectTime value={inputTime} onChange={handleChangeTime} />
         {urlError && timeError && (
-          <SubmitButton onClick={addData}>Add Data</SubmitButton>
+          <BaseButton onClick={addData} color="blue" isClick={false}>
+            Add Data
+          </BaseButton>
         )}
       </Flex>
     </Box>

@@ -2,11 +2,11 @@ import { DataType } from "./store/dataListState";
 import { ResponseType } from "./store/resDataState";
 
 //tabの遷移を監視
-chrome.tabs.onActivated.addListener((activeInfo) => {
+chrome.tabs.onActivated.addListener(() => {
   //tabが遷移したらページをリロード
   chrome.tabs.reload(() => {
     //ページリロードの完了を待つ
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
       if (changeInfo.status === "complete") {
         //ページリロードが完了したら現在のURLを取得
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -39,22 +39,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       popUpConnect(message.item);
 
       break;
-
-    // case "content":
-    //   console.log("content:", message.item);
-    //   // contentConnect().then(sendResponse);
-
-    //   contentConnect().then((res) => {
-    //     chrome.alarms.create(`${res.id}`, {
-    //       delayInMinutes: res.time,
-    //     });
-    //     chrome.alarms.onAlarm.addListener(() => {
-    //       console.log("アラームです");
-    //       sendResponse(res);
-    //     });
-    //   });
-
-    //   break;
   }
   return true;
 });

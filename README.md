@@ -1,61 +1,16 @@
-# 特定のサイトを見づらくするchrome拡張機能
+# 居眠りページ chrome 拡張機能
 
+ついつい訪れてしまうサイトの閲覧を制限する chrome 拡張機能です。
 
-ついつい訪れてしまうサイトの閲覧を制限するchrome拡張機能です。
-ON/OFFの切り替えにご利用ください
+## 作った理由
 
-## Prerequisites
+- 映画やアニメを簡単に視聴できる時代になり、僕としては幸せなのですが、依存性が強く問題意識がありました。そこで強制的に閲覧制限を設けられたらと考え開発に至りました。
 
-* [node + npm](https://nodejs.org/) (Current Version)
+## 使い方
 
-## Option
+- ページの URL と制限時間を登録します。制限時間をむかえると、閲覧中のサイトが居眠りを始めます。
+- 作業の ON/OFF の切り替えにご利用ください
 
-* [Visual Studio Code](https://code.visualstudio.com/)
+## 最後に
 
-## Includes the following
-
-* TypeScript
-* Webpack
-* React
-* Jest
-* Example Code
-    * Chrome Storage
-    * Options Version 2
-    * content script
-    * count up badge number
-    * background
-
-## Setup
-
-```
-npm install
-```
-
-## Import as Visual Studio Code project
-
-...
-
-## Build
-
-```
-npm run build
-```
-
-## Build in watch mode
-
-### terminal
-
-```
-npm run watch
-```
-
-### Visual Studio Code
-
-Run watch mode.
-
-## Load extension to chrome
-
-Load `dist` directory
-
-## Test
-`npx jest` or `npm run test`
+- 理想としては、ページを徐々に見づらくしてユーザーをイライラさせられるような UX にしたいです。もっと勉強していつか実装したいと考えています。

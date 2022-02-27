@@ -1,23 +1,25 @@
-import { Flex } from "@chakra-ui/layout";
-import React, { useState } from "react";
-import { useCallback, VFC } from "react";
+import React from "react";
+import { useState } from "react";
+import { VFC } from "react";
+import { useCallback } from "react";
 import { useRecoilState } from "recoil";
-import { dataListState, DataType } from "../store/dataListState";
+import { dataListState } from "../store/dataListState";
+import { DataType } from "../store/dataListState";
 
-import { DeleteButton } from "./atom/button/Button";
-import {
-  Box,
-  Heading,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-} from "@chakra-ui/react";
+import { BaseButton } from "./atom/button/Button";
+import { Flex } from "@chakra-ui/layout";
+import { Box } from "@chakra-ui/layout";
+import { Heading } from "@chakra-ui/layout";
+import { NumberInput } from "@chakra-ui/number-input";
+import { NumberInputField } from "@chakra-ui/number-input";
+import { NumberInputStepper } from "@chakra-ui/number-input";
+import { NumberIncrementStepper } from "@chakra-ui/number-input";
+import { NumberDecrementStepper } from "@chakra-ui/number-input";
 
 type Props = {
   item: DataType;
 };
+
 export const DataItem: VFC<Props> = ({ item }) => {
   const [dataList, setDataList] = useRecoilState(dataListState);
   const [time, setTime] = useState<number | undefined>(item.time);
@@ -62,7 +64,9 @@ export const DataItem: VFC<Props> = ({ item }) => {
           </NumberInputStepper>
         </NumberInput>
 
-        <DeleteButton onClick={deleteData}>delete</DeleteButton>
+        <BaseButton onClick={deleteData} color="red" isClick={false}>
+          delete
+        </BaseButton>
       </Flex>
     </Box>
   );
